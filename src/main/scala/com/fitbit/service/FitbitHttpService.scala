@@ -106,7 +106,16 @@ trait FitBitPaths extends HttpServiceActor with SprayJsonSupport with DefaultJso
           }
         }
       }
+    } ~
+  path("api" / "profile") {
+    get {
+      headerValueByName("Authorization") { hdrToken =>
+        parameterMap { params =>
+          complete(client.getResource("/profile.json", hdrToken))
+        }
+      }
     }
+  }
 
   def requestAuthorization: String = client.authRequestUri
 
