@@ -57,7 +57,7 @@ trait FitBitPaths extends HttpServiceActor with SprayJsonSupport with DefaultJso
       get {
         headerValueByName("Authorization") { hdrToken =>
           parameterMap { params =>
-            complete(client.getActivityDetails(Calories, "today", hdrToken))
+            complete(client.getActivityDetails(Calories, params.getOrElse("date", "today"), hdrToken, params))
           }
         }
       }
@@ -66,7 +66,7 @@ trait FitBitPaths extends HttpServiceActor with SprayJsonSupport with DefaultJso
       get {
         headerValueByName("Authorization") { hdrToken =>
           parameterMap { params =>
-            complete(client.getActivityDetails(Distance, "today", hdrToken))
+            complete(client.getActivityDetails(Distance, params.getOrElse("date", "today"), hdrToken, params))
           }
         }
       }
@@ -75,7 +75,7 @@ trait FitBitPaths extends HttpServiceActor with SprayJsonSupport with DefaultJso
       get {
         headerValueByName("Authorization") { hdrToken =>
           parameterMap { params =>
-            complete(client.getActivityDetails(Elevation, "today", hdrToken))
+            complete(client.getActivityDetails(Elevation, params.getOrElse("date", "today"), hdrToken, params))
           }
         }
       }
@@ -84,7 +84,7 @@ trait FitBitPaths extends HttpServiceActor with SprayJsonSupport with DefaultJso
       get {
         headerValueByName("Authorization") { hdrToken =>
           parameterMap { params =>
-            complete(client.getActivityDetails(Floors, "today", hdrToken))
+            complete(client.getActivityDetails(Floors, params.getOrElse("date", "today"), hdrToken, params))
           }
         }
       }
@@ -93,7 +93,7 @@ trait FitBitPaths extends HttpServiceActor with SprayJsonSupport with DefaultJso
       get {
         headerValueByName("Authorization") { hdrToken =>
           parameterMap { params =>
-            complete(client.getActivityDetails(Heart, "today", hdrToken))
+            complete(client.getActivityDetails(Heart, params.getOrElse("date", "today"), hdrToken, params))
           }
         }
       }
@@ -102,7 +102,7 @@ trait FitBitPaths extends HttpServiceActor with SprayJsonSupport with DefaultJso
       get {
         headerValueByName("Authorization") { hdrToken =>
           parameterMap { params =>
-            complete(client.getActivityDetails(Steps, "today", hdrToken))
+            complete(client.getActivityDetails(Steps, params.getOrElse("date", "today"), hdrToken, params))
           }
         }
       }

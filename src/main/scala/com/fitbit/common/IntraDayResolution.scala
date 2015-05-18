@@ -5,6 +5,10 @@ sealed trait IntraDayResolution {
   override def toString = pathValue
 }
 
+case object Second extends IntraDayResolution {
+  val pathValue = "1sec"
+}
+
 case object Minute extends IntraDayResolution {
   val pathValue = "1min"
 }

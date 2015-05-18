@@ -10,7 +10,8 @@
 		"6c79d6a2-a373-e876-53ab-f56ea048d275",
 		"9d8120d9-9e93-5e33-978a-f3366ee440e1",
 		"9c0afba8-3d1d-75b2-4f4c-fb0969ae41d4",
-		"362e2157-2c4a-4cf8-eebf-e53eb652024d"
+		"362e2157-2c4a-4cf8-eebf-e53eb652024d",
+		"eac765f7-9ab9-2d8b-be4b-52c18948c3b4"
 	],
 	"folders": [],
 	"timestamp": 1428108316515,
@@ -179,6 +180,28 @@
 			"description": "",
 			"collectionId": "61f81481-3062-9bc0-79cf-1bcb94bd9edb",
 			"responses": [],
+			"synced": false
+		},
+		{
+			"id": "eac765f7-9ab9-2d8b-be4b-52c18948c3b4",
+			"headers": "Authorization: Bearer {{FitbitToken}}\n",
+			"url": "{{RestSvc}}/api/activities/heart?date=2015-05-16&start-time=06:00&end-time=20:00&resolution=15min",
+			"pathVariables": {},
+			"preRequestScript": "",
+			"method": "GET",
+			"collectionId": "61f81481-3062-9bc0-79cf-1bcb94bd9edb",
+			"data": [],
+			"dataMode": "params",
+			"name": "heart data with date, time & res",
+			"description": "",
+			"descriptionFormat": "html",
+			"time": 1431908256786,
+			"version": 2,
+			"responses": [],
+			"tests": "",
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"collectionOwner": 0,
 			"synced": false
 		}
 	]
