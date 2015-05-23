@@ -26,4 +26,4 @@ That is it.  You should now be able to access all the activity data, using the F
  
 ### License
 
-_fitbit_rest_ is licensed under [APL 2.0].
+_fitbit_rest_ is licensed under [APL 2.0](http://www.apache.org/licenses/LICENSE-2.0).
