@@ -23,9 +23,9 @@ class FitbitHttpService(val client: FitbitClient) extends HttpServiceActor with 
 }
 
 trait FitBitPaths extends HttpServiceActor with SprayJsonSupport with DefaultJsonProtocol {
-  import DefaultJsonProtocol._
-  import spray.json._
-  import FitbitJsonProtocol._
+//  import DefaultJsonProtocol._
+//  import spray.json._
+//  import FitbitJsonProtocol._
 
   // http://stackoverflow.com/questions/19809984/spray-marshaller-for-futures-not-in-implicit-scope-after-upgrading-to-spray-1-2
   implicit def executionContext = actorRefFactory.dispatcher
@@ -41,7 +41,9 @@ trait FitBitPaths extends HttpServiceActor with SprayJsonSupport with DefaultJso
         }
     }
 
-  val fitbitRoutes = path("api" / "authorize") {
+  val fitbitRoutes = authorizationRoutes ~ activityRoutes ~ profilePath
+
+  def authorizationRoutes = path("api" / "authorize") {
     get {
       complete(requestAuthorization)
     }
@@ -52,76 +54,52 @@ trait FitBitPaths extends HttpServiceActor with SprayJsonSupport with DefaultJso
           complete(requestToken(params.getOrElse("code", ""), params.getOrElse("state", "")))
         }
       }
-    } ~
-    path("api" / "activities" / "calories") {
-      get {
-        headerValueByName("Authorization") { hdrToken =>
-          parameterMap { params =>
-            complete(client.getActivityDetails(Calories, params.getOrElse("date", "today"), hdrToken, params))
-          }
-        }
-      }
-    } ~
-    path("api" / "activities" / "distance") {
-      get {
-        headerValueByName("Authorization") { hdrToken =>
-          parameterMap { params =>
-            complete(client.getActivityDetails(Distance, params.getOrElse("date", "today"), hdrToken, params))
-          }
-        }
-      }
-    } ~
-    path("api" / "activities" / "elevation") {
-      get {
-        headerValueByName("Authorization") { hdrToken =>
-          parameterMap { params =>
-            complete(client.getActivityDetails(Elevation, params.getOrElse("date", "today"), hdrToken, params))
-          }
-        }
-      }
-    } ~
-    path("api" / "activities" / "floors") {
-      get {
-        headerValueByName("Authorization") { hdrToken =>
-          parameterMap { params =>
-            complete(client.getActivityDetails(Floors, params.getOrElse("date", "today"), hdrToken, params))
-          }
-        }
-      }
-    } ~
-    path("api" / "activities" / "heart") {
-      get {
-        headerValueByName("Authorization") { hdrToken =>
-          parameterMap { params =>
-            complete(client.getActivityDetails(Heart, params.getOrElse("date", "today"), hdrToken, params))
-          }
-        }
-      }
-    } ~
-    path("api" / "activities" / "steps") {
-      get {
-        headerValueByName("Authorization") { hdrToken =>
-          parameterMap { params =>
-            complete(client.getActivityDetails(Steps, params.getOrElse("date", "today"), hdrToken, params))
-          }
-        }
-      }
-    } ~
-  path("api" / "profile") {
+    }
+
+
+  def activityRoutes = pathPrefix("api" / "activities") {
     get {
       headerValueByName("Authorization") { hdrToken =>
         parameterMap { params =>
-          complete(client.getResource("/profile.json", hdrToken))
+          pathPrefix("calories") {
+            complete(client.getActivityDetails(Calories, params.getOrElse("date", "today"), hdrToken, params))
+          } ~
+            pathPrefix("distance") {
+              complete(client.getActivityDetails(Distance, params.getOrElse("date", "today"), hdrToken, params))
+            } ~
+            pathPrefix("elevation") {
+              complete(client.getActivityDetails(Elevation, params.getOrElse("date", "today"), hdrToken, params))
+            } ~
+            pathPrefix("floors") {
+              complete(client.getActivityDetails(Floors, params.getOrElse("date", "today"), hdrToken, params))
+            } ~
+            pathPrefix("heart") {
+              complete(client.getActivityDetails(Heart, params.getOrElse("date", "today"), hdrToken, params))
+            } ~
+            pathPrefix("steps") {
+              complete(client.getActivityDetails(Steps, params.getOrElse("date", "today"), hdrToken, params))
+            }
         }
+      }
+    }
+  }
+
+  def profilePath = path("api" / "profile") {
+    get {
+      headerValueByName("Authorization") {
+        hdrToken =>
+          parameterMap {
+            params =>
+              complete(client.getResource("/profile.json", hdrToken))
+          }
       }
     }
   }
 
   def requestAuthorization: String = client.authRequestUri
 
-  def requestToken(code: String, state: String): Future[String] = {
-    client.getAccessToken(code, state)
-  }
+  def requestToken(code: String, state: String): Future[String] = client.getAccessToken(code, state)
+
 }
 
 
