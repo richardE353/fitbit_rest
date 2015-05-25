@@ -16,3 +16,4 @@ lazy val root = (project in file("."))
     libraryDependencies ++= { commonDeps ++ akkaDeps ++ sprayDeps }
   )
 
+resolvers += "spray repo" at "http://repo.spray.io"
