@@ -20,12 +20,15 @@ import scala.concurrent.duration._
 
 class FitbitClient(config: FitbitConfig)(implicit system: ActorSystem) {
   private implicit val timeout: Timeout = 15.seconds
-  val apiAuthState = UUID.randomUUID()
+//  val apiAuthState = UUID.randomUUID()
   val encodedRedirect = URLEncoder.encode(config.apiRedirectUri, "UTF-8")
   val authScope = "activity%20nutrition%20heartrate%20location%20nutrition%20profile%20settings%20sleep%20social%20weight"
 
+  val expiration = 2592000    // ignored unless responseType = "token"
+
   val clientId = config.clientId
-  val authRequestUri = s"https://www.fitbit.com/oauth2/authorize?client_id=$clientId&response_type=code&state=$apiAuthState&redirect_uri=$encodedRedirect&scope=$authScope"
+  val responseType = config.responseType
+  val authRequestUri = s"https://www.fitbit.com/oauth2/authorize?client_id=$clientId&response_type=$responseType&redirect_uri=$encodedRedirect&scope=$authScope&expires_in=$expiration"
 
   def getActivityDetails(seriesType: TimeSeriesType, selectedDate: String, token: String, params: Map[String, String] = Map()): Future[String] = {
     val res = params.getOrElse("resolution", "1min")
@@ -64,7 +67,6 @@ class FitbitClient(config: FitbitConfig)(implicit system: ActorSystem) {
       )
     pipeline { Post("https://api.fitbit.com/oauth2/token", tokenFormData(authCode)) }
   }
-
 
   protected def cleanToken(token: String): String = token.replace("Bearer ", "")
 

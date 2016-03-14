@@ -1,7 +1,7 @@
 package com.fitbit.service
 
 import akka.actor.Props
-import com.fitbit.client.{FitbitClient, FitbitJsonProtocol}
+import com.fitbit.client.FitbitClient
 import com.fitbit.model.activities._
 import spray.httpx.SprayJsonSupport
 import spray.json.DefaultJsonProtocol
@@ -13,24 +13,22 @@ import scala.language.implicitConversions
 import scala.util.control.NonFatal
 
 object FitbitHttpService {
-  def props(client: FitbitClient): Props = Props(new FitbitHttpService(client))
+  def props(client: FitbitClient, responseType: String): Props = Props(new FitbitHttpService(client, responseType))
 }
 
-class FitbitHttpService(val client: FitbitClient) extends HttpServiceActor with FitBitPaths {
+class FitbitHttpService(val client: FitbitClient, val responseType: String) extends HttpServiceActor with FitBitPaths {
   def receive = runRoute {
     fitbitRoutes
   }
 }
 
 trait FitBitPaths extends HttpServiceActor with SprayJsonSupport with DefaultJsonProtocol {
-  //  import DefaultJsonProtocol._
-  //  import spray.json._
-  //  import FitbitJsonProtocol._
-
   // http://stackoverflow.com/questions/19809984/spray-marshaller-for-futures-not-in-implicit-scope-after-upgrading-to-spray-1-2
   implicit def executionContext = actorRefFactory.dispatcher
 
   def client: FitbitClient
+
+  def responseType: String
 
   implicit def myExceptionHandler(implicit log: LoggingContext): ExceptionHandler =
     ExceptionHandler {
@@ -47,14 +45,16 @@ trait FitBitPaths extends HttpServiceActor with SprayJsonSupport with DefaultJso
     get {
       complete(requestAuthorization)
     }
-  } ~
-    path("api" / "authorization") {
-      get {
-        parameterMap { params =>
-          complete(requestToken(params.getOrElse("code", ""), params.getOrElse("state", "")))
+  } ~ path("api" / "authorization") {
+    get {
+      parameterMap { params =>
+        responseType match {
+          case "token" => complete("extract access_token from browser location")
+          case _ => complete(requestToken(params.getOrElse("code", ""), params.getOrElse("state", "")))
         }
       }
     }
+  }
 
 
   def activityRoutes = pathPrefix("api" / "activities") {
@@ -119,7 +119,6 @@ trait FitBitPaths extends HttpServiceActor with SprayJsonSupport with DefaultJso
   def requestAuthorization: String = client.authRequestUri
 
   def requestToken(code: String, state: String): Future[String] = client.getAccessToken(code, state)
-
 }
 
 

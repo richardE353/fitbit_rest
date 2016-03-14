@@ -1,10 +1,10 @@
 import Dependencies._
 
-scalaVersion := "2.11.6"
+scalaVersion := "2.11.7"
 
 lazy val commonSettings = Seq(
   organization := "com.rda",
-  scalaVersion := "2.11.6",
+  scalaVersion := "2.11.7",
   scalacOptions := Seq("-unchecked", "-deprecation", "-encoding", "utf8", "-feature")
 )
 

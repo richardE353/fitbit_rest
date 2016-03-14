@@ -19,7 +19,7 @@ object BootFitBitSvc extends App {
   val config = initFitbitConfig(svcConf)
   val client = new FitbitClient(config)(system)
 
-  val service = system.actorOf(FitbitHttpService.props(client), "fitbit-service")
+  val service = system.actorOf(FitbitHttpService.props(client, config.responseType), "fitbit-service")
   IO(Http) ? Http.Bind(service, interface = config.host, port = config.port)
 
   def initFitbitConfig(appConf: Config): FitbitConfig = {
@@ -28,7 +28,8 @@ object BootFitBitSvc extends App {
     val protocol = appConf.getString("fitbit.protocol")
     val host = appConf.getString("fitbit.host")
     val port = appConf.getInt("fitbit.port")
+    val requestType = appConf.getString("fitbit.requestType")
 
-    FitbitConfig(clientId, secret, protocol, host, port)
+    FitbitConfig(clientId, secret, protocol, host, port, requestType)
   }
 }
